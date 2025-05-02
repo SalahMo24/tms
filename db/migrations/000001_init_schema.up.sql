@@ -40,4 +40,4 @@ CREATE TABLE transactions (
     credit DECIMAL(15, 2) DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     transaction_id UUID NOT NULL REFERENCES transaction_logs(id)
-) WITH (autovacuum_enabled=true);
+);
