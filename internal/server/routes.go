@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"tms/app/accounts"
 	"tms/app/users"
 
 	"github.com/labstack/echo/v4"
@@ -26,6 +27,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.GET("/health", s.healthHandler)
 
 	UserRoutes(e)
+	AccountRoutes(e)
 
 	return e
 }
@@ -55,6 +57,24 @@ func UserRoutes(e *echo.Echo) {
 	// User routes
 	users := api.Group("/users")
 	users.POST("", userHandler.CreateUser)
+
+	// Add middleware specific to user routes if needed
+	users.Use(middleware.Logger())
+}
+func AccountRoutes(e *echo.Echo) {
+	userRepo := users.NewRepository()
+	userService := users.NewUserService(*userRepo)
+
+	accountRepo := accounts.NewRepository()
+	accountRepoService := accounts.NewUserService(*accountRepo)
+	accounthandler := accounts.NewAccountHandler(*userService, *accountRepoService)
+
+	// Group for versioned API routes
+	api := e.Group("/api/v1")
+
+	// User routes
+	users := api.Group("/accounts")
+	users.POST("", accounthandler.AccountCreate)
 
 	// Add middleware specific to user routes if needed
 	users.Use(middleware.Logger())

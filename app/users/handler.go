@@ -7,10 +7,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type Data struct {
-	Data any `json:"data"`
-}
-
 type UserHandler struct {
 	userService UserService
 }

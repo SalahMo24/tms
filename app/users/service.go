@@ -30,11 +30,10 @@ func (s *UserService) CreateUser(req UserCreate) (string, error) {
 		return "", err
 	}
 
-	// Check username uniqueness
 	exists, _ := s.userRepo.Exists(req.SSN)
 
 	if exists != "" {
-		return "", errors.New("user already exists")
+		return exists, errors.New("user already exists")
 	}
 
 	// Create user
