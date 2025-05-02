@@ -1,7 +1,6 @@
 package users
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -36,7 +35,6 @@ func (h *UserHandler) CreateUser(c echo.Context) error {
 			"error": "Invalid request payload",
 		})
 	}
-	log.Print(req)
 
 	// Call service layer
 	createdUserId, err := h.userService.CreateUser(req)
