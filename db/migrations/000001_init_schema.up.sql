@@ -33,11 +33,10 @@ CREATE TABLE transaction_logs (
 );
 
 -- Transactions table (for balance calculations)
-CREATE TABLE transactions (
+CREATE TABLE account_balance (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     account_id UUID NOT NULL REFERENCES accounts(id),
-    debit DECIMAL(15, 2) DEFAULT 0,
-    credit DECIMAL(15, 2) DEFAULT 0,
+    balance DECIMAL(15, 2) DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     transaction_id UUID NOT NULL REFERENCES transaction_logs(id)
 );

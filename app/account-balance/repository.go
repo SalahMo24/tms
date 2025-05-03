@@ -1,4 +1,4 @@
-package transactions
+package accountbalance
 
 import (
 	"database/sql"
@@ -9,17 +9,17 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type TransactionRepository struct {
+type AccountBalanceRepository struct {
 	db database.Service
 }
 
-func NewRepository() *TransactionRepository {
-	return &TransactionRepository{
+func NewRepository() *AccountBalanceRepository {
+	return &AccountBalanceRepository{
 		db: database.New(), // This gets the singleton database instance
 	}
 }
 
-func (t *TransactionRepository) Create(tc TransactionCreate) (string, error) {
+func (t *AccountBalanceRepository) Create(tc AccountBalanceCreate) (string, error) {
 	db := t.db.DB()
 
 	tx, err := db.Begin()
@@ -35,8 +35,8 @@ func (t *TransactionRepository) Create(tc TransactionCreate) (string, error) {
 	// Get the last transaction's running balance
 	var lastBalance decimal.Decimal
 	err = tx.QueryRow(`
-        SELECT (debit - credit) as balance 
-        FROM transactions 
+        SELECT balance
+        FROM account_balance 
         WHERE account_id = $1
 		order by created_at desc
 		limit 1
@@ -53,17 +53,15 @@ func (t *TransactionRepository) Create(tc TransactionCreate) (string, error) {
 
 	// Calculate new debit/credit values
 	amount := decimal.NewFromFloat(tc.Amount)
-	var newDebit, newCredit decimal.Decimal
+
 	var newBalance decimal.Decimal
 
 	switch tc.TransactionType {
 	case types.Debit:
-		newDebit = amount
-		newCredit = decimal.Zero
+
 		newBalance = lastBalance.Add(amount)
 	case types.Credit:
-		newDebit = decimal.Zero
-		newCredit = amount
+
 		newBalance = lastBalance.Sub(amount)
 	default:
 		return "", fmt.Errorf("invalid transaction type: %s", tc.TransactionType)
@@ -78,16 +76,14 @@ func (t *TransactionRepository) Create(tc TransactionCreate) (string, error) {
 	// Insert new transaction
 	var id string
 	err = tx.QueryRow(`
-        INSERT INTO transactions (
+        INSERT INTO account_balance (
             account_id, 
-            debit, 
-            credit, 
+            balance,
             transaction_id
-        ) VALUES ($1, $2, $3, $4)
+        ) VALUES ($1, $2, $3)
         RETURNING id`,
 		tc.AccountId,
-		newDebit,
-		newCredit,
+		newBalance,
 		tc.TransactionId,
 	).Scan(&id)
 

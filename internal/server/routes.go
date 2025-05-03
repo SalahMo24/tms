@@ -2,7 +2,9 @@ package server
 
 import (
 	"net/http"
+	accountbalance "tms/app/account-balance"
 	"tms/app/accounts"
+	transactionlogs "tms/app/transaction-logs"
 	"tms/app/users"
 
 	"github.com/labstack/echo/v4"
@@ -28,7 +30,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	UserRoutes(e)
 	AccountRoutes(e)
-
+	TransactionRoutes(e)
 	return e
 }
 
@@ -75,6 +77,24 @@ func AccountRoutes(e *echo.Echo) {
 	// User routes
 	users := api.Group("/accounts")
 	users.POST("", accounthandler.AccountCreate)
+
+	// Add middleware specific to user routes if needed
+	users.Use(middleware.Logger())
+}
+func TransactionRoutes(e *echo.Echo) {
+	transactionLogRepo := transactionlogs.NewRepository()
+	transactionLogService := transactionlogs.NewTransactionLogService(*transactionLogRepo)
+
+	accountBalanceRepo := accountbalance.NewRepository()
+	accountBalanceService := accountbalance.NewAccountBalanceService(*accountBalanceRepo)
+	accountBalanceHnadler := accountbalance.NewAccountBalanceHandler(*accountBalanceService, *transactionLogService)
+
+	// Group for versioned API routes
+	api := e.Group("/api/v1")
+
+	// User routes
+	users := api.Group("/transactions")
+	users.POST("", accountBalanceHnadler.Create)
 
 	// Add middleware specific to user routes if needed
 	users.Use(middleware.Logger())

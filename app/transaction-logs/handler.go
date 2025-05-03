@@ -16,7 +16,7 @@ func NewTransactionLogHandler(transactionLogService TransactionLogService) *Tran
 	}
 }
 
-func (h *TransactionLogHandler) CreateUser(c echo.Context) error {
+func (h *TransactionLogHandler) Create(c echo.Context) error {
 	var req TransactionLogCreate
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{

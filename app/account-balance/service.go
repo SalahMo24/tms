@@ -1,28 +1,28 @@
-package transactions
+package accountbalance
 
 import (
 	"errors"
 	"tms/app/types"
 )
 
-type TransactionService struct {
-	transactionRepo TransactionRepository
+type AccountBalanceService struct {
+	accountBalancenRepo AccountBalanceRepository
 }
 
-func NewTransactionService(transactionRepo TransactionRepository) *TransactionService {
-	return &TransactionService{
-		transactionRepo: transactionRepo,
+func NewAccountBalanceService(accountBalancenRepo AccountBalanceRepository) *AccountBalanceService {
+	return &AccountBalanceService{
+		accountBalancenRepo: accountBalancenRepo,
 	}
 }
 
-func (s *TransactionService) Create(tl TransactionCreate) (string, error) {
+func (s *AccountBalanceService) Create(tl AccountBalanceCreate) (string, error) {
 	if err := validateTransactionAmount(tl.Amount); err != nil {
 		return "", err
 	}
 	if err := validateTransactionType(tl.TransactionType); err != nil {
 		return "", err
 	}
-	id, err := s.transactionRepo.Create(tl)
+	id, err := s.accountBalancenRepo.Create(tl)
 	if err != nil {
 		return "", err
 	}
