@@ -1,8 +1,7 @@
 package accountbalance
 
 import (
-	"errors"
-	"tms/app/types"
+	"tms/utils/validations"
 )
 
 type AccountBalanceService struct {
@@ -16,10 +15,10 @@ func NewAccountBalanceService(accountBalancenRepo AccountBalanceRepository) *Acc
 }
 
 func (s *AccountBalanceService) Create(tl AccountBalanceCreate) (string, error) {
-	if err := validateTransactionAmount(tl.Amount); err != nil {
+	if err := validations.ValidateTransactionAmount(tl.Amount); err != nil {
 		return "", err
 	}
-	if err := validateTransactionType(tl.TransactionType); err != nil {
+	if err := validations.ValidateTransactionType(tl.TransactionType); err != nil {
 		return "", err
 	}
 	id, err := s.accountBalancenRepo.Create(tl)
@@ -29,17 +28,4 @@ func (s *AccountBalanceService) Create(tl AccountBalanceCreate) (string, error) 
 
 	return id, nil
 
-}
-
-func validateTransactionAmount(amount float64) error {
-	if amount < 0 {
-		return errors.New("transaction amount should be a non negative value")
-	}
-	return nil
-}
-func validateTransactionType(transactionType types.TransactionType) error {
-	if !transactionType.Valid() {
-		return errors.New("transaction type is not supported")
-	}
-	return nil
 }
