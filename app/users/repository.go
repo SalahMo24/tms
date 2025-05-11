@@ -1,6 +1,10 @@
 package users
 
-import "tms/internal/database"
+import (
+	"tms/internal/database"
+	"tms/utils/assert"
+	"tms/utils/validations"
+)
 
 type UserRepository struct {
 	db database.Service
@@ -13,6 +17,11 @@ func NewRepository() *UserRepository {
 }
 
 func (u *UserRepository) Create(user UserCreate) (string, error) {
+	assert.Nil(validations.ValidateName(user.FirstName, "first name"), "first name validation failed")
+	assert.Nil(validations.ValidateName(user.LastName, "last name"), "last name validation failed")
+	assert.Nil(validations.ValidatePhoneNumber(user.PhoneNumber), "Phone number validation failed")
+	assert.Nil(validations.ValidateSSN(user.SSN), "SSN validation failed")
+
 	db := u.db.DB()
 
 	query := `
@@ -35,9 +44,14 @@ func (u *UserRepository) Create(user UserCreate) (string, error) {
 		return "", err
 	}
 
+	assert.NotNil(id, "user id is nil")
+	assert.Type("", id, "id should be an string")
+
 	return id, nil
 }
 func (u *UserRepository) Exists(ssn string) (string, error) {
+	assert.Nil(validations.ValidateSSN(ssn), "SSN validation failed")
+
 	db := u.db.DB()
 
 	query := `
