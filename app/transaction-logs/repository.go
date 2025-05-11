@@ -3,6 +3,8 @@ package transactionlogs
 import (
 	"tms/app/types"
 	"tms/internal/database"
+	"tms/utils/assert"
+	"tms/utils/validations"
 )
 
 type TransactionLogRepository struct {
@@ -16,8 +18,11 @@ func NewRepository() *TransactionLogRepository {
 }
 
 func (t *TransactionLogRepository) Create(tl TransactionLogCreate) (string, error) {
-	db := t.db.DB()
+	assert.Nil(validations.ValidateTransactionType(tl.TransactionType), "transaction type is not valid")
+	assert.Nil(validations.ValidateTransactionAmount(tl.Amount), "transaction amount is not valid")
+	assert.Type("", tl.AccountId, "account id should be a string")
 
+	db := t.db.DB()
 	query := `
 	INSERT INTO transaction_logs (transaction_type, amount, status, account_id)
 	VALUES ($1, $2, $3, $4)
@@ -37,9 +42,14 @@ func (t *TransactionLogRepository) Create(tl TransactionLogCreate) (string, erro
 		return "", err
 	}
 
+	assert.NotNil(id, "id should not be nil")
+	assert.Type("", id, "id should be a string")
+
 	return id, nil
 }
 func (t *TransactionLogRepository) UpdateStatus(status types.Status, transactionId string) (string, error) {
+	assert.Nil(validations.ValidateTransactionStatus(status), "transaction status is not valid")
+	assert.Type("", transactionId, "transaction id should be a string")
 	db := t.db.DB()
 
 	query := `
@@ -57,6 +67,7 @@ func (t *TransactionLogRepository) UpdateStatus(status types.Status, transaction
 	if err != nil {
 		return "", err
 	}
-
+	assert.NotNil(id, "id should not be nil")
+	assert.Type("", id, "id should be a string")
 	return id, nil
 }

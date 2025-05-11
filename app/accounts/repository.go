@@ -1,6 +1,9 @@
 package accounts
 
-import "tms/internal/database"
+import (
+	"tms/internal/database"
+	"tms/utils/assert"
+)
 
 type AccountRepository struct {
 	db database.Service
@@ -13,6 +16,7 @@ func NewRepository() *AccountRepository {
 }
 
 func (u *AccountRepository) Create(userId string) (string, error) {
+	assert.Type("", userId, "user id should be a string")
 	db := u.db.DB()
 
 	query := `
@@ -32,6 +36,8 @@ func (u *AccountRepository) Create(userId string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	assert.NotNil(id, "account id should not be nil")
+	assert.Type("", id, "account id should be a string")
 
 	return id, nil
 }

@@ -2,6 +2,7 @@ package users
 
 import (
 	"errors"
+	"tms/utils/assert"
 	"tms/utils/validations"
 )
 
@@ -47,6 +48,9 @@ func (s *UserService) CreateUser(req UserCreate) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	assert.NotNil(createdUser, "user id should not be nil")
+	assert.Type("", createdUser, "user id should be a string")
 
 	return createdUser, nil
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"tms/app/types"
 	"tms/internal/database"
+	"tms/utils/assert"
+	"tms/utils/validations"
 
 	"github.com/shopspring/decimal"
 )
@@ -20,6 +22,11 @@ func NewRepository() *AccountBalanceRepository {
 }
 
 func (t *AccountBalanceRepository) Create(tc AccountBalanceCreate) (string, error) {
+	assert.Nil(validations.ValidateTransactionType(tc.TransactionType), "transaction type is not valid")
+	assert.Nil(validations.ValidateTransactionAmount(tc.Amount), "transaction amount is not valid")
+	assert.Type("", tc.AccountId, "account id should be a string")
+	assert.Type("", tc.TransactionId, "transaction id should be a string")
+
 	db := t.db.DB()
 
 	tx, err := db.Begin()
@@ -94,6 +101,9 @@ func (t *AccountBalanceRepository) Create(tc AccountBalanceCreate) (string, erro
 	if err := tx.Commit(); err != nil {
 		return "", fmt.Errorf("failed to commit transaction: %w", err)
 	}
+
+	assert.NotNil(id, "id should not be nil")
+	assert.Type("", id, "id should be a string")
 
 	return id, nil
 }

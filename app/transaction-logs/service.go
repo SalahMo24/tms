@@ -2,6 +2,7 @@ package transactionlogs
 
 import (
 	"tms/app/types"
+	"tms/utils/assert"
 	"tms/utils/validations"
 )
 
@@ -26,7 +27,8 @@ func (s *TransactionLogService) Create(tl TransactionLogCreate) (string, error) 
 	if err != nil {
 		return "", err
 	}
-
+	assert.NotNil(id, "id should not be nil")
+	assert.Type("", id, "id should be a string")
 	return id, nil
 
 }
@@ -39,6 +41,8 @@ func (s *TransactionLogService) UpdateTransactionLogStatus(status types.Status, 
 	if err != nil {
 		return "", err
 	}
+	assert.NotNil(id, "id should not be nil")
+	assert.Type("", id, "id should be a string")
 
 	return id, nil
 

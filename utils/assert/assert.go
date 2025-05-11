@@ -38,8 +38,6 @@ func NotNil(value any, message string) {
 func Type(expectedType any, value any, message string) {
 	expected := reflect.TypeOf(expectedType)
 	actual := reflect.TypeOf(value)
-	print(actual)
-	print(expected)
 
 	if actual != expected {
 		panicWithMessage(fmt.Sprintf("%s: expected type %v, got %v", message, expected, actual))
