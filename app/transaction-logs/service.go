@@ -10,6 +10,11 @@ type TransactionLogService struct {
 	transactionLogRepo TransactionLogRepository
 }
 
+type TransactionLogServiceInterface interface {
+	Create(tl TransactionLogCreate) (string, error)
+	UpdateTransactionLogStatus(status types.Status, id string) (string, error)
+}
+
 func NewTransactionLogService(transactionLogRepo TransactionLogRepository) *TransactionLogService {
 	return &TransactionLogService{
 		transactionLogRepo: transactionLogRepo,

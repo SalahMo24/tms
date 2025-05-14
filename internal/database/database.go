@@ -41,6 +41,8 @@ var (
 )
 
 func New() Service {
+	port = os.Getenv("BLUEPRINT_DB_PORT")
+	println("lll: ", port)
 	// Reuse Connection
 	if dbInstance != nil {
 		return dbInstance
