@@ -15,13 +15,6 @@ import (
 func TestCreateTransactionLog_Integration(t *testing.T) {
 	// === Setup ===
 	e := echo.New()
-	t.Setenv("BLUEPRINT_DB_DATABASE", "tms")
-	t.Setenv("BLUEPRINT_DB_PASSWORD", "salah1999")
-	t.Setenv("BLUEPRINT_DB_USERNAME", "postgres")
-	t.Setenv("BLUEPRINT_DB_PORT", "8080")
-	t.Setenv("BLUEPRINT_DB_HOST", "localhost")
-	t.Setenv("BLUEPRINT_DB_SCHEMA", "public")
-
 	// Initialize real repository, service, handler
 	repo := NewRepository()
 	svc := NewTransactionLogService(*repo)
